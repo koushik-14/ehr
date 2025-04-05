@@ -3,16 +3,10 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
-from twilio.rest import Client
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.secret_key = "your_secret_key"  # Used for session management
-
-# Twilio Credentials (Replace with actual credentials)
-TWILIO_ACCOUNT_SID = "AC62d0382ae811a22b2c67ca0351fee077"
-TWILIO_AUTH_TOKEN = "e97d4e3be12368c5930f405885913318"
-TWILIO_PHONE_NUMBER = "+18573670895"
 
 # Initialize Doctor Database
 def init_doctor_db():
@@ -89,22 +83,9 @@ def doctor_form():
         conn.commit()
         conn.close()
 
-        # Send SMS notification
-        sms_message = f"Hello {username}, your health record has been updated.\nSuggestion: {suggestion}"
-        send_sms(phone, sms_message)
-
         return "Data submitted successfully!"
 
     return render_template('doctor_form.html')
-
-# Function to send SMS
-def send_sms(phone, message):
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    client.messages.create(
-        body=message,
-        from_=TWILIO_PHONE_NUMBER,
-        to=f"+91{phone}"  # Adjust country code if needed
-    )
 
 if __name__ == '__main__':
     init_doctor_db()
